@@ -1,10 +1,11 @@
 import "react-toastify/dist/ReactToastify.css";
 import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { registerRoute } from "../utils/API_routes";
 function Register() {
+ const navigate =  useNavigate();
   const toastOption = {
     position: "bottom-right",
     autoClose: 2000,
@@ -27,7 +28,18 @@ function Register() {
         email: email.current.value,
         password: password.current.value,
       });
-      console.log(data.status);
+      
+      if(data.status===false)
+      {
+        toast.error(data.msg,toastOption);
+      }
+      if(data.status===true)
+      {
+        localStorage.setItem(
+          "chat-app-user",JSON.stringify(data.user)
+        )
+      }
+      navigate("/");
     }
   };
 
