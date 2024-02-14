@@ -1,11 +1,16 @@
 import "react-toastify/dist/ReactToastify.css";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { registerRoute } from "../utils/API_routes";
 function Register() {
  const navigate =  useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("chat-app-user")) {
+      navigate("/");
+    }
+  }, []);
   const toastOption = {
     position: "bottom-right",
     autoClose: 2000,
@@ -35,11 +40,13 @@ function Register() {
       }
       if(data.status===true)
       {
+        console.log(data);
         localStorage.setItem(
           "chat-app-user",JSON.stringify(data.user)
         )
+         navigate("/");
       }
-      navigate("/");
+     
     }
   };
 
