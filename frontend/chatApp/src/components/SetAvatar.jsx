@@ -1,13 +1,16 @@
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import styled from "styled-components";
+import { setAvatarRoute } from "../utils/API_routes";
 function SetAvatar() {
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
 
+  const navigate = useNavigate();
   const api = "https://robohash.org/";
   const toastOption = {
     position: "bottom-right",
@@ -17,11 +20,28 @@ function SetAvatar() {
     theme: "dark",
   };
 
-  const setProfilePic =  () => {
-    console.log("clicked")
-    if(selectedAvatar== undefined)
-    {
-      toast.error("Please, Select an Avatar!!",toastOption);
+  const setProfilePic = async () => {
+    console.log("clicked");
+    if (selectedAvatar == undefined) {
+      toast.error("Please, Select an Avatar!!", toastOption);
+    } else {
+      const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+      
+      console.log("selected avatar: "+avatars[selectedAvatar]);
+
+      const { data } = await axios.post(`${setAvatarRoute}`, {
+        image: avatars[selectedAvatar],
+        id:user._id
+      });
+      console.log(data);
+      if (data.isSet) {
+        user.isAvatarImageSet = true;
+        user.avatarImage = data.image;
+        localStorage.setItem("chat-app-user", JSON.stringify(user));
+        navigate("/");
+      } else {
+        toast.error("an error occured", toastOption);
+      }
     }
   };
   async function something() {
@@ -33,7 +53,7 @@ function SetAvatar() {
         "0123456789" +
         "abcdefghijklmnopqrstuvxyz";
       let randomString = "";
-     
+
       for (let j = 0; j < 6; j++) {
         const indx = Math.round(Math.random() * AlphaNumericString.length);
         randomString += AlphaNumericString.charAt(indx);
@@ -76,7 +96,7 @@ function SetAvatar() {
       <div className="submit-btn" onClick={setProfilePic}>
         Set as Profile Picture
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </Container>
   );
 }

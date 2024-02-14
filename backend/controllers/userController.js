@@ -57,3 +57,40 @@ module.exports.login = async (req, res, next) => {
     next(ex);
   }
 };
+
+module.exports.setAvatar = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const image = req.body.image;
+    const userData = await User.findByIdAndUpdate(id, {
+      isAvatarImageSet: true,
+      AvatarImage: image,
+    });
+    console.log("image: " + image);
+    console.log(userData.AvatarImage);
+    return res.json({
+      isSet: true,
+      image: image,
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getallUser = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const userData = await User.find({ _id: { $ne: id } }).select([
+      "email",
+      "userName",
+      "AvatarImage",
+      "_id",
+    ]);
+    console.log(userData);
+    return res.json(userData);
+  } catch (ex) {
+    next(ex);
+  }
+};
+
