@@ -1,2 +1,0 @@
-# RealTime_ChatApp
-

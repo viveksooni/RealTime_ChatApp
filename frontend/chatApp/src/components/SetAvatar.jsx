@@ -36,7 +36,7 @@ function SetAvatar() {
       console.log(data);
       if (data.isSet) {
         user.isAvatarImageSet = true;
-        user.avatarImage = data.image;
+        user.AvatarImage = data.image;
         localStorage.setItem("chat-app-user", JSON.stringify(user));
         navigate("/");
       } else {
@@ -84,8 +84,9 @@ function SetAvatar() {
             >
               <img
                 className="robo"
-                src={`https://robohash.org/${avatar}/?set=set2 `}
+                src={`https://robohash.org/${avatar}/ `}
                 onClick={() => {
+                  console.log(avatars[index])
                   setSelectedAvatar(index);
                 }}
               />

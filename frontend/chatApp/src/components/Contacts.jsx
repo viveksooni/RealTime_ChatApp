@@ -1,37 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-function Contacts( {contacts} ) {
- 
-  
+function Contacts({ contacts, changeChat }) {
+  const [currentSelected, setCurrentSelected] = useState(undefined);
+  const [currentUserName, setCurrentUserName] = useState(undefined);
+  const [currentUserImage, setCurrentUserImage] = useState(undefined);
+
+  const setUserData = async () => {
+    const data = await JSON.parse(localStorage.getItem("chat-app-user"));
+    setCurrentUserName(data.userName);
+    setCurrentUserImage(data.AvatarImage);
+  };
+  useEffect(() => {
+    setUserData();
+  }, []);
+
+  const changeCurrentChat = (index, contact) => {
+    setCurrentSelected(index);
+    changeChat(contact);
+  };
   return (
     <Container>
+      <div className="brand">
+        <h3>Chat App</h3>
+      </div>
       <div className="contacts">
-        {contacts.map((contact) => {
+        {contacts.map((contact, index) => {
           return (
-            <>
-              <div
-                key={contact._id}
-                className={`contact`}
-                onClick={() => changeCurrentChat(index, contact)}
-              >
-                <div className="avatar">
-                  <img
-                    src={`https://robohash.org/${contact.AvatarImage}`}
-                    alt="image"
-                  />
-                </div>
-                <div className="username">
-                  <h3>{contact.username}</h3>
-                </div>
+            <div
+              key={contact._id}
+              className={`contact ${
+                index === currentSelected ? "selected" : ""
+              }`}
+              onClick={() => changeCurrentChat(index, contact)}
+            >
+              <div className="avatar">
+                <img
+                  src={`https://robohash.org/${contact.AvatarImage}`}
+                  alt="roboPhoto"
+                />
               </div>
-            </>
+              <div className="username">
+                <h3>{contact.userName}</h3>
+              </div>
+            </div>
           );
         })}
+      </div>
+      <div className="current-user">
+        <div className="avatar">
+          
+          <img
+            src={`https://robohash.org/${currentUserImage}`}
+            alt="avatar"
+          />
+        </div>
+        <div className="username">
+          <h2>{currentUserName}</h2>
+        </div>
       </div>
     </Container>
   );
 }
-
 
 const Container = styled.div`
   display: grid;
@@ -66,6 +95,7 @@ const Container = styled.div`
       }
     }
     .contact {
+      text-transform: uppercase;
       background-color: #ffffff34;
       min-height: 5rem;
       cursor: pointer;
@@ -78,7 +108,8 @@ const Container = styled.div`
       transition: 0.5s ease-in-out;
       .avatar {
         img {
-          height: 3rem;
+          height: 5rem;
+          border-radius: 50%;
         }
       }
       .username {
@@ -93,6 +124,7 @@ const Container = styled.div`
   }
 
   .current-user {
+    text-transform: uppercase;
     background-color: #0d0d30;
     display: flex;
     justify-content: center;
@@ -100,8 +132,9 @@ const Container = styled.div`
     gap: 2rem;
     .avatar {
       img {
-        height: 4rem;
+        height: 6rem;
         max-inline-size: 100%;
+        border-radius: 50%;
       }
     }
     .username {

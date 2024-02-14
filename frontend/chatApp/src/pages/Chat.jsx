@@ -4,14 +4,16 @@ import { allUserRoute } from "../utils/API_routes";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Welcome from "../components/Welcome";
 function Chat() {
-  const [currentUser, setCurrentUser] = useState(undefined);
+  const [currentUser, setCurrentUser] = useState();
   const [contacts, setContacts] = useState([]);
+  const [currentChat, setCurrentChat] = useState(undefined);
   const navigate = useNavigate();
 
   const logOut = async () => {
     if (!localStorage.getItem("chat-app-user")) {
-      navigate("/");
+      navigate("/login");
     } else {
       setCurrentUser(await JSON.parse(localStorage.getItem("chat-app-user")));
     }
@@ -21,8 +23,11 @@ function Chat() {
   }, []);
 
   const getContatcts = async () => {
+
     if (currentUser) {
+         console.log(currentUser.userName);
       if (currentUser.isAvatarImageSet) {
+     
         const { data } = await axios(`${allUserRoute}/${currentUser._id}`);
         console.log(data);
         setContacts(data);
@@ -31,13 +36,19 @@ function Chat() {
       }
     }
   };
+
   useEffect(() => {
     getContatcts();
   }, [currentUser]);
+
+  const handleChatChange = (chat) => {
+    setCurrentChat(chat);
+  };
   return (
     <Container>
       <div className="container">
-        <Contacts contacts={contacts}></Contacts>
+        <Contacts contacts={contacts} chatChange={handleChatChange}></Contacts>
+        <Welcome currentUser={currentUser}></Welcome>
       </div>
     </Container>
   );
