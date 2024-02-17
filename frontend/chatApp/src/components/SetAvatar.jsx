@@ -19,21 +19,27 @@ function SetAvatar() {
     draggable: true,
     theme: "dark",
   };
+  const logout = async () => {
+    if (!localStorage.getItem("chat-app-user")) {
+      navigate("/login");
+    }
+  };
+
+  useEffect(() => {
+    logout()
+  }, []);
 
   const setProfilePic = async () => {
-    console.log("clicked");
     if (selectedAvatar == undefined) {
       toast.error("Please, Select an Avatar!!", toastOption);
     } else {
       const user = await JSON.parse(localStorage.getItem("chat-app-user"));
-      
-      console.log("selected avatar: "+avatars[selectedAvatar]);
 
       const { data } = await axios.post(`${setAvatarRoute}`, {
         image: avatars[selectedAvatar],
-        id:user._id
+        id: user._id,
       });
-      console.log(data);
+
       if (data.isSet) {
         user.isAvatarImageSet = true;
         user.AvatarImage = data.image;
@@ -49,9 +55,7 @@ function SetAvatar() {
 
     for (let i = 0; i < 4; i++) {
       const AlphaNumericString =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-        "0123456789" +
-        "abcdefghijklmnopqrstuvxyz";
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz!@$^*><";
       let randomString = "";
 
       for (let j = 0; j < 6; j++) {
@@ -60,7 +64,7 @@ function SetAvatar() {
       }
       data.push(randomString);
     }
-    console.log(data);
+
     setAvatars(data);
     setIsLoading(false);
   }
@@ -84,9 +88,8 @@ function SetAvatar() {
             >
               <img
                 className="robo"
-                src={`https://robohash.org/${avatar}/ `}
+                src={`https://robohash.org/${avatar}`}
                 onClick={() => {
-                  console.log(avatars[index])
                   setSelectedAvatar(index);
                 }}
               />
@@ -97,6 +100,9 @@ function SetAvatar() {
       <div className="submit-btn" onClick={setProfilePic}>
         Set as Profile Picture
       </div>
+      <div className="submit-btn" onClick={() => something()}>
+        More Avatars
+      </div>
       <ToastContainer />
     </Container>
   );
@@ -104,6 +110,7 @@ function SetAvatar() {
 
 const Container = styled.div`
   display: flex;
+
   justify-content: center;
   align-items: center;
   flex-direction: column;

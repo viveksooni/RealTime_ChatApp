@@ -66,8 +66,8 @@ module.exports.setAvatar = async (req, res, next) => {
       isAvatarImageSet: true,
       AvatarImage: image,
     });
-    console.log("image: " + image);
-    console.log(userData.AvatarImage);
+    
+
     return res.json({
       isSet: true,
       image: image,
@@ -80,17 +80,22 @@ module.exports.setAvatar = async (req, res, next) => {
 module.exports.getallUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log(id);
+  
     const userData = await User.find({ _id: { $ne: id } }).select([
       "email",
       "userName",
       "AvatarImage",
       "_id",
     ]);
-    console.log(userData);
+  
     return res.json(userData);
   } catch (ex) {
     next(ex);
   }
 };
 
+module.exports.logout = (req, res, next) => {
+
+  const id = req.params.id;
+  
+};

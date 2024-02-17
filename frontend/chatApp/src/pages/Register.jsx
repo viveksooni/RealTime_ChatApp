@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { registerRoute } from "../utils/API_routes";
 function Register() {
- const navigate =  useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("chat-app-user")) {
       navigate("/");
@@ -33,20 +33,14 @@ function Register() {
         email: email.current.value,
         password: password.current.value,
       });
-      
-      if(data.status===false)
-      {
-        toast.error(data.msg,toastOption);
+
+      if (data.status === false) {
+        toast.error(data.msg, toastOption);
       }
-      if(data.status===true)
-      {
-        console.log(data);
-        localStorage.setItem(
-          "chat-app-user",JSON.stringify(data.user)
-        )
-         navigate("/");
+      if (data.status === true) {
+        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+        navigate("/");
       }
-     
     }
   };
 

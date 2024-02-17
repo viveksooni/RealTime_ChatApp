@@ -7,12 +7,11 @@ import { loginRoute } from "../utils/API_routes";
 function Login() {
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(localStorage.getItem("chat-app-user"))
-    {
-      navigate("/")
+  useEffect(() => {
+    if (localStorage.getItem("chat-app-user")) {
+      navigate("/");
     }
-  },[])
+  }, []);
   const toastOption = {
     position: "bottom-right",
     autoClose: 2000,
@@ -31,13 +30,11 @@ function Login() {
         userName: userName.current.value,
         password: password.current.value,
       });
-      
+
       if (data.status === false) {
-        console.log("password or email is incorrect");
         toast.error(data.msg, toastOption);
       }
       if (data.status === true) {
-        console.log(data);
         localStorage.setItem("chat-app-user", JSON.stringify(data.user));
         navigate("/");
       }

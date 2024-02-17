@@ -5,6 +5,8 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Welcome from "../components/Welcome";
+import ChatContainer from "../components/ChatContainer";
+import LogOut from "../components/LogOut";
 function Chat() {
   const [currentUser, setCurrentUser] = useState();
   const [contacts, setContacts] = useState([]);
@@ -23,13 +25,11 @@ function Chat() {
   }, []);
 
   const getContatcts = async () => {
-
     if (currentUser) {
-         console.log(currentUser.userName);
+  
       if (currentUser.isAvatarImageSet) {
-     
         const { data } = await axios(`${allUserRoute}/${currentUser._id}`);
-        console.log(data);
+       
         setContacts(data);
       } else {
         navigate("/setAvatar");
@@ -48,8 +48,14 @@ function Chat() {
     <Container>
       <div className="container">
         <Contacts contacts={contacts} chatChange={handleChatChange}></Contacts>
-        <Welcome currentUser={currentUser}></Welcome>
+
+        {currentChat === undefined ? (
+          <Welcome currentUser={currentUser}></Welcome>
+        ) : (
+          <ChatContainer currentChat={currentChat}></ChatContainer>
+        )}
       </div>
+      <LogOut></LogOut>
     </Container>
   );
 }

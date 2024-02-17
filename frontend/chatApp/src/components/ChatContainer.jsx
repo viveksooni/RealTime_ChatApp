@@ -1,9 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-function ChatContainer() {
+import ChatInput from "./ChatInput";
+import { addMsgRoute, getMsgRoute } from "../utils/API_routes";
+import axios from "axios";
+function ChatContainer({ currentChat }) {
+  const [messages, setMessages] = useState([]);
+
+  const loadChats = async () => {
+    if (currentChat) {
+      const data = await JSON.parse(localStorage.getItem("chat-app-user"));
+      const response = await axios.post(`${getMsgRoute}`, {
+        from: data._id,
+        to: currentChat._id,
+      });
+      console.log(response.data);
+      setMessages(response.data);
+    }
+  };
+
+  useEffect(() => {
+    loadChats();
+  }, [currentChat]);
+
+  const handleSendMsg = async (msg) => {
+    const data = await JSON.parse(localStorage.getItem("chat-app-user"));
+
+    if (msg.length > 0) {
+      
+      await axios.post(`${addMsgRoute}`, {
+        message: msg,
+        users: [data._id, currentChat._id],
+        from: data._id,
+      });
+      setMessages([...messages, { fromSelf: true, msg }]);
+      console.log(messages);
+    } else {
+      console.log("type to kr");
+    }
+  };
   return (
     <Container>
-      <div className="chat-container"></div>
+      <div className="chat-header">
+        <div className="user-details">
+          <div className="avatar">
+            <img
+              src={`https://robohash.org/${currentChat.AvatarImage}`}
+              alt=""
+            />
+          </div>
+          <div className="username">
+            <h3>{currentChat.userName}</h3>
+          </div>
+        </div>
+      </div>
+      <div className="chat-messages">
+    
+        {messages.map((message) => {
+          console.log(message);
+          return (
+            <div>
+              <div
+                className={`message ${
+                  message.fromSelf ? "sended" : "recieved"
+                }`}
+              >
+                <div className="content ">
+                  <p>{message.msg}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <ChatInput handleSendMsg={handleSendMsg}></ChatInput>
     </Container>
   );
 }
@@ -12,7 +81,7 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 80% 10%;
   gap: 0.1rem;
-  overflow: hidden;
+  overflow: auto;
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
   }
@@ -24,14 +93,16 @@ const Container = styled.div`
     .user-details {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 2rem;
       .avatar {
         img {
-          height: 3rem;
+          height: 4rem;
+          border-radius: 50%;
         }
       }
       .username {
         h3 {
+          text-transform: uppercase;
           color: white;
         }
       }
@@ -69,13 +140,13 @@ const Container = styled.div`
     .sended {
       justify-content: flex-end;
       .content {
-        background-color: #4f04ff21;
+        background-color: green;
       }
     }
     .recieved {
       justify-content: flex-start;
       .content {
-        background-color: #9900ff20;
+        background-color: red;
       }
     }
   }
