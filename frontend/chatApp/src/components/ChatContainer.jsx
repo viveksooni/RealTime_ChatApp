@@ -13,7 +13,7 @@ function ChatContainer({ currentChat }) {
         from: data._id,
         to: currentChat._id,
       });
-      console.log(response.data);
+     
       setMessages(response.data);
     }
   };
@@ -26,14 +26,13 @@ function ChatContainer({ currentChat }) {
     const data = await JSON.parse(localStorage.getItem("chat-app-user"));
 
     if (msg.length > 0) {
-      
       await axios.post(`${addMsgRoute}`, {
         message: msg,
         users: [data._id, currentChat._id],
         from: data._id,
       });
       setMessages([...messages, { fromSelf: true, msg }]);
-      console.log(messages);
+  
     } else {
       console.log("type to kr");
     }
@@ -54,11 +53,10 @@ function ChatContainer({ currentChat }) {
         </div>
       </div>
       <div className="chat-messages">
-    
         {messages.map((message) => {
-          console.log(message);
+          
           return (
-            <div>
+            <div key={Math.random()*1000}>
               <div
                 className={`message ${
                   message.fromSelf ? "sended" : "recieved"
@@ -140,13 +138,13 @@ const Container = styled.div`
     .sended {
       justify-content: flex-end;
       .content {
-        background-color: green;
+        background-color: #6c3483;
       }
     }
     .recieved {
       justify-content: flex-start;
       .content {
-        background-color: red;
+        background-color: #9b59b6;
       }
     }
   }
