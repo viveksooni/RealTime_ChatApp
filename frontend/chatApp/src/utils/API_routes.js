@@ -1,5 +1,4 @@
-export const host =
-  "https://glowing-space-robot-j9gvqjjqqxw3p5pw-5000.app.github.dev";
+export const host = "https://realtimechatting.onrender.com";
 
 export const registerRoute = `${host}/api/auth/register`;
 export const loginRoute = `${host}/api/auth/login`;
