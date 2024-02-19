@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import { addMsgRoute, getMsgRoute } from "../utils/API_routes";
 import axios from "axios";
-function ChatContainer({ currentChat }) {
+function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
-
+  const [arrivalMsg, setArrivalMsg] = useState([]);
+  const scrollRef = useRef();
   const loadChats = async () => {
     if (currentChat) {
       const data = await JSON.parse(localStorage.getItem("chat-app-user"));
@@ -13,7 +14,7 @@ function ChatContainer({ currentChat }) {
         from: data._id,
         to: currentChat._id,
       });
-     
+
       setMessages(response.data);
     }
   };
@@ -22,6 +23,14 @@ function ChatContainer({ currentChat }) {
     loadChats();
   }, [currentChat]);
 
+  useEffect(() => {
+    const getCurrentChat = async () => {
+      if (currentChat) {
+        await JSON.parse(localStorage.getItem("chat-app-user"))._id;
+      }
+    };
+    getCurrentChat();
+  }, [currentChat]);
   const handleSendMsg = async (msg) => {
     const data = await JSON.parse(localStorage.getItem("chat-app-user"));
 
@@ -31,12 +40,34 @@ function ChatContainer({ currentChat }) {
         users: [data._id, currentChat._id],
         from: data._id,
       });
+
+      socket.current.emit("send-msg", {
+        to: currentChat._id,
+        from: data._id,
+        msg: msg,
+      });
       setMessages([...messages, { fromSelf: true, msg }]);
-  
     } else {
       console.log("type to kr");
     }
   };
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-recieve", (msg) => {
+        setArrivalMsg({ fromSelf: false, msg: msg });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(arrivalMsg);
+    arrivalMsg && setMessages((prev) => [...prev, arrivalMsg]);
+    console.log(messages);
+  }, [arrivalMsg]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
+  }, [messages]);
   return (
     <Container>
       <div className="chat-header">
@@ -54,9 +85,8 @@ function ChatContainer({ currentChat }) {
       </div>
       <div className="chat-messages">
         {messages.map((message) => {
-          
           return (
-            <div key={Math.random()*1000}>
+            <div ref ={scrollRef} key={Math.random() * 1000}>
               <div
                 className={`message ${
                   message.fromSelf ? "sended" : "recieved"

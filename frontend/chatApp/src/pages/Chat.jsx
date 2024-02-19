@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import Contacts from "../components/Contacts";
-import { allUserRoute } from "../utils/API_routes";
+import { allUserRoute, host } from "../utils/API_routes";
 import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Welcome from "../components/Welcome";
 import ChatContainer from "../components/ChatContainer";
 import LogOut from "../components/LogOut";
+import { io } from "socket.io-client";
 function Chat() {
+  const socket = useRef();
   const [currentUser, setCurrentUser] = useState();
   const [contacts, setContacts] = useState([]);
   const [currentChat, setCurrentChat] = useState(undefined);
@@ -23,7 +25,12 @@ function Chat() {
   useEffect(() => {
     logOut();
   }, []);
-
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser._id);
+    }
+  },[currentUser]);
   const getContatcts = async () => {
     if (currentUser) {
       if (currentUser.isAvatarImageSet) {
@@ -51,7 +58,7 @@ function Chat() {
         {currentChat === undefined ? (
           <Welcome currentUser={currentUser}></Welcome>
         ) : (
-          <ChatContainer currentChat={currentChat}></ChatContainer>
+          <ChatContainer currentChat={currentChat} socket={socket}></ChatContainer>
         )}
       </div>
       <LogOut></LogOut>
